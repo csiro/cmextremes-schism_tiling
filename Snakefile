@@ -1,0 +1,55 @@
+import os
+
+tiles = list(range(103))
+years = list(range(1980,2015))
+
+#tiles = list(range(2))
+#years = list(range(1980,1982))
+months = list(range(1,13))
+srcdir = "/datasets/work/oa-ppbcha/work/PPBCHA/schism_output/baseline"
+destdir="/scratch1/dav562/schism/output"
+
+rule all:
+    input: expand(os.path.join(destdir, "chunked/t{i}.nc"), i=tiles)
+     
+rule chunk:
+    input: os.path.join(destdir, "concat/t{i}.nc")
+    output: os.path.join(destdir, "chunked/t{i}.nc")
+    params: time=360, mem="12g"
+    shell:
+        """
+        module load nco
+        nccopy -u -c "time/35064,nSCHISM_hgrid_node/4,two/1" {input} {output}
+        """
+
+# 35064
+
+# we need to identify every input needed,
+# otherwise the extract will not be triggered.
+# can we do a glob for the years at least.
+# there is 35 years x 12 months
+rule concat:
+    input: lambda wildcards: expand(os.path.join(destdir, "extracts/t{ii}_{year}_{month}.nc"), ii=wildcards.i, year=years, month=months)
+    output: os.path.join(destdir, "concat/t{i}.nc")
+    params: time=300, mem="6g"
+    shell:
+        """
+        module load nco
+        ncrcat {input} {output}
+        """
+
+# this input should exist already, there is not rule to make it.
+rule extract:
+    input: lambda wildcards: os.path.join(srcdir, wildcards.year, 'schout_{}_{:02d}.nc'.format(wildcards.year, int(wildcards.month)))
+    output: os.path.join(destdir, "extracts/t{i}_{year}_{month}.nc")
+    params: time=20, mem="4g"
+    # from wildcards.i we need to derive the netcdf min/max indices
+    shell:
+        """
+        module load nco
+        i={wildcards.i}
+        START=$(( $i*1506 ))
+        END=$(( ($i+1)*1506 - 1 ))
+        (( $END >= 155083 )) && unset END
+        ncks -O -v WWM_1,WWM_11,WWM_18,WWM_19,WWM_2,WWM_20,WWM_3,elev,dahv -d nSCHISM_hgrid_node,$START,${{END-}} {input} {output}
+        """
