@@ -28,6 +28,14 @@ Jobs can be deployed in SLURM on the cluster and resources allocated to it can b
 
 Snakemake has its own syntax although it is python-based, and python can be freely mixed with it. In addition, the rules may be carried out using python or bash shell.
 
+## Preparing the environment
+
+Although I created my own [miniconda environment](https://docs.conda.io/en/latest/miniconda.html)with snakemake installed in it, snakemake has now been installed in HPC python environments. Therefore, you can run
+
+```
+module load python/3.6.1
+```
+
 ## Quick run through the Snakefile
 
 Looking at the Snakefiles, it is conceptually easier to work backwards starting from the desired file (tiled and chunked). These are specified under *rule all*.
@@ -43,6 +51,7 @@ This creates a dependency on *rule extract*. Here there expected SCHISM files ar
 In order to run on the cluster, it should be run on one of the pearcey interactive nodes as a supervisor. This could be run under a vnc session so as not to terminate on logout. Use this command
 
 ```bash
+module load python/3.6.1
 snakemake -s Snakefile.baseline  --printshellcmds --cluster 'sbatch -t {params.time} --mem={params.mem}' -j 50
 ```
 
