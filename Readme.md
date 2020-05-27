@@ -66,3 +66,6 @@ The snakemake job should be run on /scratch1 as a working directory due to space
 Snakemake will put many thousands of files into the *.snakemake* directory, more than your quota under /home.
 It will also write thousands of slurm job output files. Sometimes you might have to stop the snakemake task (ctrl-C), delete these, then restart. The task remains to automatically clean up these files as the jobs progress.
 
+# License
+
+This source code is licensed under a modified form of the BSD / MIT open source license. Please see the LICENSE.md file for a copy, and make sure you understand and agree to the terms before using this code.
