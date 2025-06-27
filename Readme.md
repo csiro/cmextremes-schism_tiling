@@ -68,4 +68,4 @@ It will also write thousands of slurm job output files. Sometimes you might have
 
 # License
 
-This source code is licensed under a modified form of the BSD / MIT open source license. Please see the LICENSE.md file for a copy, and make sure you understand and agree to the terms before using this code.
+This source code is licensed under an open source license. Please see the LICENSE.md file for a copy, and make sure you understand and agree to the terms before using this code.
